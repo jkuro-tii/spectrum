@@ -11,7 +11,7 @@ QEMU_KVM = qemu-kvm
 build/rootfs.ext4: build/rootfs.tar $(EXT_FS)
 	tar2ext4 -i build/rootfs.tar -o $@.tmp
 	mv $@.tmp $@
-	cp $(EXT_FS) build/extfs.ext4
+	cp -f $(EXT_FS) build/extfs.ext4
 
 FILES = \
 	etc/fonts/fonts.conf \
