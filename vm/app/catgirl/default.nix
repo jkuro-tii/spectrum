@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: MIT
 # SPDX-FileCopyrightText: 2021 Alyssa Ross <hi@alyssa.is>
 
-{ pkgs ? import <nixpkgs> {}
+{ pkgs ? import <nixpkgs> { crossSystem = {config = "aarch64-unknown-linux-musl";}; }
 , terminfo ? pkgs.foot.terminfo
 }:
 
@@ -47,8 +47,10 @@ let
         -T ${writeReferencesToFile packagesSysroot} .
   '';
 
-  kernel = buildPackages.linux.override {
+  kernel = pkgs.linux_hardened.override {
     structuredExtraConfig = with lib.kernel; {
+      EFI_STUB=yes;
+      EFI=yes;
       VIRTIO = yes;
       VIRTIO_PCI = yes;
       VIRTIO_BLK = yes;
@@ -75,6 +77,7 @@ stdenv.mkDerivation {
 
   PACKAGES_TAR = packagesTar;
   VMLINUX = "${kernel.dev}/vmlinux";
+  IMAGE = "${kernel}/Image";
 
   installPhase = ''
     mv build/svc $out
